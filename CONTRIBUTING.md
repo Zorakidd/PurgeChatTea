@@ -29,4 +29,17 @@ Roughly stick to the style that's already there. No drama over formatting, just 
 
 ## Testing
 
-There are no automated tests, this thing runs live against ChatGPT. So: install it in your browser, try it on an unimportant account or old chats, don't go nuking your main history right away.
+There is no test suite in the repo, this thing runs live against ChatGPT. So: install it in your browser, try it on an unimportant account or old chats, don't go nuking your main history right away.
+
+Before you open a PR, at least run `node --check chatgpt-bulk-deleter.js`. It catches the typo that would otherwise leave everyone with a dead launcher button.
+
+Worth walking through by hand when you touch the list or the delete path:
+
+* Load with a filter active, then delete only the filtered selection
+* Cancel mid-run and check that the untouched chats are still listed
+* A run where something fails (throttle yourself in devtools) and the failed rows stay marked
+* Scroll a few thousand chats, since the list only renders what is on screen and index bugs hide there
+
+## Bumping the version
+
+The version lives in the `@version` line of the userscript header. Bump it in the same commit as the change and add a line to [CHANGELOG.md](./CHANGELOG.md), so people can tell what they are pulling before they paste it into their browser.
