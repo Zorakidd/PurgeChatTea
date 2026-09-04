@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.2] - 2026
+
+### Changed
+* The log strip at the bottom no longer opens just to narrate loading. "Loading conversations…" and "N chats loaded" were pushing a permanent panel into view that then sat there stealing height from the list for the rest of the session. The live count already runs in the footer while loading, and the total lands in the header when it's done
+* Every job now starts with the log emptied and closed again, so a clean run leaves no strip behind and old failures don't pile up under new ones
+* It still opens on its own for anything that actually matters: errors, failed rows, rate-limit retries, the page-limit warning, and the summary after a delete or archive
+
 ## [3.0.1] - 2026
 
 ### Fixed
