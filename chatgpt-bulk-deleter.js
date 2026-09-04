@@ -117,6 +117,8 @@
     /** Strips control characters and truncates. Everything from the server passes through here. */
     function clean(value, max) {
         let s = typeof value === 'string' ? value : String(value == null ? '' : value);
+        // Control characters are the point here: C0, DEL/C1, zero-width, bidi marks and line separators.
+        // eslint-disable-next-line no-control-regex
         s = s.replace(/[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u2028\u2029\uFEFF]/g, ' ')
             .replace(/\s+/g, ' ')
             .trim();
@@ -319,7 +321,7 @@
                     await sleep(backoff(attempt), signal);
                     continue;
                 }
-                throw new Error(describe(err));
+                throw new Error(describe(err), { cause: err });
             } finally {
                 link.release();
             }
@@ -812,7 +814,9 @@ select.mode {
         ensureMounted();
         if (el.scrim) return;
 
-        lastFocus = document.activeElement;
+        // Inside the shadow tree document.activeElement retargets to the host, which is not
+        // focusable, so ask the shadow root first and only fall back to the page.
+        lastFocus = (root && root.activeElement) || document.activeElement;
 
         const scrim = document.createElement('div');
         scrim.className = 'scrim';
@@ -946,12 +950,11 @@ select.mode {
         state.confirming = false;
         state.activeIndex = -1;
         state.anchorIndex = -1;
-        if (lastFocus && typeof lastFocus.focus === 'function') {
-            try { lastFocus.focus(); } catch { /* element went away */ }
-        } else if (el.launcher) {
-            el.launcher.focus();
-        }
+        const restore = lastFocus && lastFocus !== host && lastFocus.isConnected ? lastFocus : el.launcher;
         lastFocus = null;
+        if (restore && typeof restore.focus === 'function') {
+            try { restore.focus(); } catch { /* element went away between open and close */ }
+        }
     }
 
     function removeDocKeyHandler() {
@@ -1103,8 +1106,11 @@ select.mode {
             for (const row of rowPool.splice(need)) row.remove();
         }
 
-        el.list.setAttribute('aria-activedescendant',
-            state.activeIndex >= 0 && state.activeIndex < items.length ? 'cbd-row-' + state.activeIndex : '');
+        if (state.activeIndex >= 0 && state.activeIndex < items.length) {
+            el.list.setAttribute('aria-activedescendant', 'cbd-row-' + state.activeIndex);
+        } else {
+            el.list.removeAttribute('aria-activedescendant');
+        }
     }
 
     function toggleAt(index, extend) {
@@ -1426,7 +1432,6 @@ select.mode {
         let cursor = 0;
         let finished = 0;
         let ok = 0;
-        let cancelled = false;
         const succeeded = new Set();
 
         setProgress(0, total, `0 of ${num(total)}`);
@@ -1478,7 +1483,7 @@ select.mode {
             const slots = Math.max(1, Math.min(CFG.writeConcurrency, total));
             await Promise.all(Array.from({ length: slots }, (_, i) => worker(i)));
         } finally {
-            cancelled = signal.aborted;
+            const cancelled = signal.aborted;
 
             // One pass over the list instead of one filter per deleted item.
             if (succeeded.size) {
