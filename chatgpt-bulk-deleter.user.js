@@ -1219,6 +1219,18 @@ select.mode {
         el.log.scrollTop = el.log.scrollHeight;
     }
 
+    /**
+     * The log panel eats height that the list would otherwise get, so it only exists while
+     * it has something to say. Every job starts it empty and hidden again; a run that goes
+     * through cleanly never opens it at all.
+     */
+    function resetLog() {
+        logBuffer.length = 0;
+        if (!el.log) return;
+        el.log.replaceChildren();
+        el.log.hidden = true;
+    }
+
     function renderMeta() {
         if (!el.meta) return;
         el.meta.textContent = state.loaded
@@ -1387,9 +1399,11 @@ select.mode {
         state.done.clear();
         state.activeIndex = -1;
         state.anchorIndex = -1;
-        log('Loading conversations…');
+        resetLog();
 
         try {
+            // Progress lives in the footer while it runs and in the header once it is done,
+            // so there is nothing here worth spending a permanent strip of the panel on.
             const { items, truncated } = await loadAll(signal, (count) => {
                 setProgress(0, 0, `${num(count)} loaded…`);
             });
@@ -1397,7 +1411,6 @@ select.mode {
             state.loaded = true;
             state.stale = false;
             if (truncated) log(`Stopped at the page limit (${num(CFG.maxPages)} pages per pass).`, 'bad');
-            log(`${num(items.length)} ${plural(items.length)} loaded.`, 'good');
         } catch (err) {
             if (isCancel(err)) log('Loading cancelled.', 'bad');
             else log(describe(err), 'bad');
@@ -1422,6 +1435,7 @@ select.mode {
         }
 
         const signal = startJob();
+        resetLog();                       // last run's failures are not this run's news
         state.failed.clear();
         state.done.clear();
         pacing.writeDelayMs = CFG.writeDelayMs;
