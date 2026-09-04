@@ -1,11 +1,11 @@
 // ==UserScript==
 // @name             ChatGPT Bulk Deleter
 // @description      Deletes or archives ChatGPT conversations in bulk. Loads the list via the API instead of the DOM, with search, confirmation, progress, rate-limit handling and honest error reporting.
-// @version          3.0.0
+// @version          3.0.1
 // @author           Zora
-// @homepageURL      https://github.com/Zorakidd/chatgpt-bulk-deleter
-// @supportURL       https://github.com/Zorakidd/chatgpt-bulk-deleter/issues
-// @namespace        https://github.com/Zorakidd/chatgpt-bulk-deleter
+// @homepageURL      https://github.com/Zorakidd/PurgeChatTea
+// @supportURL       https://github.com/Zorakidd/PurgeChatTea/issues
+// @namespace        https://github.com/Zorakidd/PurgeChatTea
 // @match            *://chatgpt.com/*
 // @match            *://www.chatgpt.com/*
 // @grant            none

@@ -28,12 +28,19 @@ Use at your own risk.
 
 ## Installation
 
-1. Install Tampermonkey or Violentmonkey in your browser.
-2. Open the dashboard and click "Create a new script".
-3. Paste the contents of [`chatgpt-bulk-deleter.js`](./chatgpt-bulk-deleter.js) and save.
-4. Open `https://chatgpt.com`. A "Clean up chats" button shows up in the bottom right corner.
+1. You need a userscript extension in your browser:
+   * **Chrome / Brave / Edge / Opera:** [Tampermonkey](https://www.tampermonkey.net/) or [Violentmonkey](https://violentmonkey.github.io/)
+   * **Firefox:** [Tampermonkey](https://www.tampermonkey.net/), [Violentmonkey](https://violentmonkey.github.io/) or [Greasemonkey](https://addons.mozilla.org/firefox/addon/greasemonkey/)
+
+2. Open [`chatgpt-bulk-deleter.user.js`](./chatgpt-bulk-deleter.user.js) and click "Raw" at the top. Your extension will catch it and ask if you want to install. Click yes.
+
+   Rather read every line before it touches your session? Open the dashboard, click "Create a new script", and paste the contents in by hand. Same result.
+
+3. Open [ChatGPT](https://chatgpt.com) **in your browser**. A "Clean up chats" button shows up in the bottom right corner.
 
 Needs a reasonably current browser: Chrome or Edge 93+, Firefox 91+, Safari 15+.
+
+> **If you fork or rename this file, keep the `.user.js` ending.** Userscript extensions only offer the install prompt for URLs that end in `.user.js`. Name it `.js` and the Raw link just shows you source code, with no way to install it.
 
 ## Usage
 
@@ -83,6 +90,8 @@ Good to know: `is_visible: false` is a soft delete. The conversation disappears 
 There is no contact to any domain other than `chatgpt.com`, no `eval`, no loading of external code. The script refuses to run outside the top frame, over plain HTTP, or on any host other than `chatgpt.com`. Everything the API sends back is treated as untrusted: ids are checked against a strict pattern before they are used to build a request, titles are stripped of control characters and only ever inserted as text. More detail in [SECURITY.md](./SECURITY.md).
 
 `@downloadURL none` and `@updateURL none` disable auto-update, on purpose. A userscript with `@match *://chatgpt.com/*` sits in your logged-in session and can read your entire history and your token. A harmless version 1.0 says nothing about what an automatically pulled version 1.1 contains. So please update deliberately and skim the diff first.
+
+That only switches off silent updates, installing from the Raw link works normally. To update later, pull the new version the same way and skim the diff before you accept it.
 
 The internal API is undocumented and can change at any time. If loading suddenly breaks with an HTTP error, the endpoint has probably moved.
 

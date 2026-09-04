@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.1] - 2026
+
+### Fixed
+* Installing from the Raw link worked again. The file had been renamed from `chatgpt-bulk-deleter.user.js` to `chatgpt-bulk-deleter.js`, and userscript extensions only offer the install prompt for URLs ending in `.user.js`. Everything else was fine, the Raw link just rendered as source with no way to install it
+* `@homepageURL`, `@supportURL` and `@namespace` pointed at `Zorakidd/chatgpt-bulk-deleter`, a repo that does not exist, so the Homepage and Support links in the userscript dashboard led nowhere. They point at this repo now
+
+Note: because `@namespace` changed, an already installed copy counts as a different script. Remove the old entry from your userscript dashboard after installing this one, otherwise you end up with both.
+
 ## [3.0.0] - 2026
 
 Hardening and performance pass. Same feature set, rebuilt internals.

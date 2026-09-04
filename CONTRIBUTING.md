@@ -31,7 +31,7 @@ Roughly stick to the style that's already there. No drama over formatting, just 
 
 There is no test suite in the repo, this thing runs live against ChatGPT. So: install it in your browser, try it on an unimportant account or old chats, don't go nuking your main history right away.
 
-Before you open a PR, at least run `node --check chatgpt-bulk-deleter.js`. It catches the typo that would otherwise leave everyone with a dead launcher button.
+Before you open a PR, at least run `node --check chatgpt-bulk-deleter.user.js`. It catches the typo that would otherwise leave everyone with a dead launcher button.
 
 Worth walking through by hand when you touch the list or the delete path:
 
@@ -43,3 +43,7 @@ Worth walking through by hand when you touch the list or the delete path:
 ## Bumping the version
 
 The version lives in the `@version` line of the userscript header. Bump it in the same commit as the change and add a line to [CHANGELOG.md](./CHANGELOG.md), so people can tell what they are pulling before they paste it into their browser.
+
+## Don't rename the script file
+
+It has to stay `chatgpt-bulk-deleter.user.js`. Userscript extensions only hook a URL whose path ends in `.user.js`, so dropping that suffix quietly breaks installing from the Raw link for everyone, with no error anywhere. The file just renders as source.
